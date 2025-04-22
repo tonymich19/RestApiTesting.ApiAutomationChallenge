@@ -1,0 +1,14 @@
+{
+  "plugins": [
+    {
+      "name": "SpecFlow.Allure",
+      "type": "Generator"
+    }
+  ],
+  "allure": {
+    "resultsDirectory": "allure-results"
+  },
+  "language": {
+    "feature": "en"
+  }
+}
