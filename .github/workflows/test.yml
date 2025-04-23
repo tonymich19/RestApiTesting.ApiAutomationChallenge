@@ -22,11 +22,11 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build
+      - name: Build the project
         run: dotnet build --no-restore
 
-      - name: Run tests with Allure result output
-        run: dotnet test --no-build --logger:"junit;LogFilePath=TestResults\results.xml" --results-directory TestResults
+      - name: Run tests and generate Allure result files
+        run: dotnet test --no-build --results-directory TestResults
 
       - name: Download Allure CLI
         run: |
@@ -39,7 +39,7 @@ jobs:
           allure\allure-2.24.0\bin\allure.bat generate TestResults --clean -o allure-report
           allure\allure-2.24.0\bin\allure.bat summary allure-report
 
-      - name: Upload Allure Report (v4)
+      - name: Upload Allure Report as artifact
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
