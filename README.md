@@ -1,4 +1,4 @@
-# RestApiTesting.ApiAutomationChallenge <img src="RestApiTesting.ApiAutomationChallenge/Images/jaguar.jpg" width="99">
+# RestApiTesting.ApiAutomationChallenge 
 
 This is a RESTful API testing framework using **C#**, **.NET Core**, **SpecFlow (BDD)**, **xUnit**, **Flurl**, and **FluentAssertions**, built to test the [JSONPlaceholder](https://jsonplaceholder.typicode.com/) API with modern, readable, and maintainable test practices.
 
