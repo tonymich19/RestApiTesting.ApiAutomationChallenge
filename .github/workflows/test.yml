@@ -1,4 +1,4 @@
-﻿name: CI - .NET Core 2.1 + Allure
+﻿name: CI - .NET Core 2.1 + Allure Reports
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
 
-      - name: Run tests with Allure output
+      - name: Run tests with Allure result output
         run: dotnet test --no-build --logger:"junit;LogFilePath=TestResults\results.xml" --results-directory TestResults
 
       - name: Download Allure CLI
@@ -39,8 +39,8 @@ jobs:
           allure\allure-2.24.0\bin\allure.bat generate TestResults --clean -o allure-report
           allure\allure-2.24.0\bin\allure.bat summary allure-report
 
-      - name: Upload Allure Report as Artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload Allure Report (v4)
+        uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report
