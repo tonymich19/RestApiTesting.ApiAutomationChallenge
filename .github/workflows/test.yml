@@ -1,0 +1,45 @@
+name: .NET API Test CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: ?? Checkout repository
+      uses: actions/checkout@v3
+
+    - name: ?? Setup .NET Core SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 2.1.x
+
+    - name: ?? Restore dependencies
+      run: dotnet restore
+
+    - name: ??? Build solution
+      run: dotnet build --configuration Release
+
+    - name: ?? Run tests with Allure results
+      run: dotnet test --logger "trx" --results-directory TestResults
+
+    - name: ?? Install Allure CLI
+      run: |
+        sudo apt update
+        sudo apt install -y allure
+
+    - name: ?? Generate Allure Report
+      run: |
+        mkdir -p allure-report
+        allure generate --clean allure-results -o allure-report
+
+    - name: ?? Upload Allure Report as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: allure-report
+        path: allure-report
