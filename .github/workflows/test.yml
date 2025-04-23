@@ -1,4 +1,4 @@
-﻿name: .NET API Test CI
+﻿name: CI - .NET Core 2.1 + Allure
 
 on:
   push:
@@ -6,50 +6,41 @@ on:
   pull_request:
     branches: [ master ]
 
-permissions:
-  contents: read
-  actions: write
-
 jobs:
   build-and-test:
-    runs-on: ubuntu-20.04
+    runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup .NET Core SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 2.1.x
+      - name: Setup .NET Core 2.1 SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 2.1.818
 
-    - name: Restore dependencies
-      run: dotnet restore
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Build solution
-      run: dotnet build --configuration Release
+      - name: Build
+        run: dotnet build --no-restore
 
-    - name: Run tests with Allure results
-      run: dotnet test --logger "trx" --results-directory TestResults
+      - name: Run tests with Allure output
+        run: dotnet test --no-build --logger:"junit;LogFilePath=TestResults\results.xml" --results-directory TestResults
 
-    - name: Install Allure CLI
-      run: |
-        sudo apt update
-        sudo apt install -y allure
+      - name: Download Allure CLI
+        run: |
+          Invoke-WebRequest -Uri https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.zip -OutFile allure.zip
+          Expand-Archive allure.zip -DestinationPath allure
+          echo "$env:GITHUB_WORKSPACE\allure\allure-2.24.0\bin" | Out-File -Append $env:GITHUB_PATH
 
-    - name: Generate Allure Report
-      run: |
-        mkdir -p allure-report
-        allure generate --clean allure-results -o allure-report
+      - name: Generate Allure Report
+        run: |
+          allure\allure-2.24.0\bin\allure.bat generate TestResults --clean -o allure-report
+          allure\allure-2.24.0\bin\allure.bat summary allure-report
 
-    - name: Verificar conteúdo do diretório allure-report
-      run: ls -la allure-report
-
-    - name: Compactar relatório Allure
-      run: zip -r allure-report.zip allure-report
-
-    - name: Upload Allure Report zip
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-report
-        path: allure-report.zip
+      - name: Upload Allure Report as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: allure-report
+          path: allure-report
