@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ master ]
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -22,7 +26,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name:  Build solution
+    - name: Build solution
       run: dotnet build --configuration Release
 
     - name: Run tests with Allure results
@@ -38,8 +42,14 @@ jobs:
         mkdir -p allure-report
         allure generate --clean allure-results -o allure-report
 
-    - name: Upload Allure Report as artifact
-      uses: actions/upload-artifact@v2
+    - name: Verificar conteúdo do diretório allure-report
+      run: ls -la allure-report
+
+    - name: Compactar relatório Allure
+      run: zip -r allure-report.zip allure-report
+
+    - name: Upload Allure Report zip
+      uses: actions/upload-artifact@v4
       with:
         name: allure-report
-        path: allure-report
+        path: allure-report.zip
